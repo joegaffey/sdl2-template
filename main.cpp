@@ -4,24 +4,25 @@
 int WIN_WIDTH = 800;
 int WIN_HEIGHT = 600;
 
-SDL_Rect offsetRect;
-
-SDL_Surface* winSurface = nullptr;
-SDL_GameController* controller = nullptr;
+SDL_Renderer* renderer;
+SDL_Rect imageRect;
+SDL_Texture* texture;
+SDL_Surface* winSurface;
+SDL_GameController* controller;
         
 void performActionOnButtonPress(SDL_GameControllerButton button) {
     switch (button) {
         case SDL_CONTROLLER_BUTTON_A:
-            offsetRect.y--;
+            imageRect.y--;
             break;
         case SDL_CONTROLLER_BUTTON_B:
-            offsetRect.x--;
+            imageRect.x--;
             break;
         case SDL_CONTROLLER_BUTTON_X:
-            offsetRect.x++;
+            imageRect.x++;
             break;
         case SDL_CONTROLLER_BUTTON_Y:
-            offsetRect.y++;
+            imageRect.y++;
             break;
     }
 }
@@ -29,37 +30,37 @@ void performActionOnButtonPress(SDL_GameControllerButton button) {
 void performActionOnKeyInput(SDL_Event ev) {
     switch (ev.key.keysym.sym) {
         case SDLK_UP:
-            offsetRect.y--;
+            imageRect.y--;
             break;
         case SDLK_LEFT:
-            offsetRect.x--;
+            imageRect.x--;
             break;
         case SDLK_RIGHT:
-            offsetRect.x++;
+            imageRect.x++;
             break;
         case SDLK_DOWN:
-            offsetRect.y++;
+            imageRect.y++;
             break;
         case SDLK_w:
-            offsetRect.y--;
+            imageRect.y--;
             break;
         case SDLK_a:
-            offsetRect.x--;
+            imageRect.x--;
             break;
         case SDLK_d:
-            offsetRect.x++;
+            imageRect.x++;
             break;
         case SDLK_s:
-            offsetRect.y++;
+            imageRect.y++;
             break;
     }
 }
 
-void paint(SDL_Surface* winSurface, SDL_Surface* imageSurface, SDL_Window* window) {
-    winSurface = SDL_GetWindowSurface(window);
-    SDL_FillRect(winSurface, nullptr, SDL_MapRGB(winSurface -> format, 255, 255, 255));
-    SDL_BlitSurface(imageSurface, nullptr, winSurface, &offsetRect);
-    SDL_UpdateWindowSurface(window);
+void paint() {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, nullptr, &imageRect);
+    SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char const *argv[])
@@ -97,13 +98,22 @@ int main(int argc, char const *argv[])
                                               WIN_HEIGHT, 
                                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        if (!renderer) {
+            std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+            SDL_DestroyWindow(window);
+            SDL_Quit();
+            return -1;
+        }
+
         SDL_Surface* imageSurface = SDL_LoadBMP("sdl.bmp");
         if (!imageSurface) {
             std::cout << "Unable to load image! SDL_Error: " << SDL_GetError() << std::endl;
         }
+        texture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+        imageRect = {(WIN_WIDTH - imageSurface->w) / 2, (WIN_HEIGHT - imageSurface->h) / 2, imageSurface->w, imageSurface->h};
+        SDL_FreeSurface(imageSurface);
 
-        offsetRect = {(WIN_WIDTH - imageSurface->w) / 2, (WIN_HEIGHT - imageSurface->h) / 2, 0, 0};
-        
         int running = 1;
         
         while(running) 
@@ -123,17 +133,16 @@ int main(int argc, char const *argv[])
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
                         WIN_WIDTH = event.window.data1;
                         WIN_HEIGHT = event.window.data2;
-                        offsetRect = {(WIN_WIDTH - imageSurface->w) / 2, (WIN_HEIGHT - imageSurface->h) / 2, 0, 0};
+                        imageRect = {(WIN_WIDTH - imageRect.w) / 2, (WIN_HEIGHT - imageRect.h) / 2, imageRect.w, imageRect.h};
                     }
                     break;
                 case SDL_KEYDOWN:
                     performActionOnKeyInput(event);
                     break;
             }
-            paint(winSurface, imageSurface, window);
+            paint();
         }
 
-        SDL_FreeSurface(imageSurface);
         SDL_DestroyWindow(window);
     }
     if (controller) {
