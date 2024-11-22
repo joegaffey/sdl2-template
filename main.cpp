@@ -12,47 +12,23 @@ SDL_GameController* controller;
         
 void performActionOnButtonPress(SDL_GameControllerButton button) {
     switch (button) {
-        case SDL_CONTROLLER_BUTTON_A:
-            imageRect.y--;
-            break;
-        case SDL_CONTROLLER_BUTTON_B:
-            imageRect.x--;
-            break;
-        case SDL_CONTROLLER_BUTTON_X:
-            imageRect.x++;
-            break;
-        case SDL_CONTROLLER_BUTTON_Y:
-            imageRect.y++;
-            break;
+        case SDL_CONTROLLER_BUTTON_A: imageRect.y--; break;
+        case SDL_CONTROLLER_BUTTON_B: imageRect.x--; break;
+        case SDL_CONTROLLER_BUTTON_X: imageRect.x++; break;
+        case SDL_CONTROLLER_BUTTON_Y: imageRect.y++; break;
     }
 }
 
 void performActionOnKeyInput(SDL_Event ev) {
     switch (ev.key.keysym.sym) {
-        case SDLK_UP:
-            imageRect.y--;
-            break;
-        case SDLK_LEFT:
-            imageRect.x--;
-            break;
-        case SDLK_RIGHT:
-            imageRect.x++;
-            break;
-        case SDLK_DOWN:
-            imageRect.y++;
-            break;
-        case SDLK_w:
-            imageRect.y--;
-            break;
-        case SDLK_a:
-            imageRect.x--;
-            break;
-        case SDLK_d:
-            imageRect.x++;
-            break;
-        case SDLK_s:
-            imageRect.y++;
-            break;
+        case SDLK_UP: imageRect.y--; break;
+        case SDLK_LEFT: imageRect.x--; break;
+        case SDLK_RIGHT: imageRect.x++; break;
+        case SDLK_DOWN: imageRect.y++; break;
+        case SDLK_w: imageRect.y--; break; 
+        case SDLK_a: imageRect.x--; break;
+        case SDLK_d: imageRect.x++; break;
+        case SDLK_s: imageRect.y++; break;
     }
 }
 
@@ -91,7 +67,7 @@ int main(int argc, char const *argv[])
         SDL_DisplayMode DM;
         SDL_GetCurrentDisplayMode(0, &DM);
         
-        SDL_Window* window = SDL_CreateWindow("SDL2 Test", 
+        SDL_Window* window = SDL_CreateWindow("SDL2 Template", 
                                               (DM.w / 2) - (WIN_WIDTH / 2), 
                                               (DM.h / 2) - (WIN_HEIGHT / 2), 
                                               WIN_WIDTH, 
@@ -127,7 +103,8 @@ int main(int argc, char const *argv[])
                 case SDL_CONTROLLERBUTTONDOWN:
                     performActionOnButtonPress((SDL_GameControllerButton)event.cbutton.button);
                     break;
-                case SDL_CONTROLLERBUTTONUP:
+                case SDL_KEYDOWN:
+                    performActionOnKeyInput(event);
                     break;
                 case SDL_WINDOWEVENT:
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -135,9 +112,6 @@ int main(int argc, char const *argv[])
                         WIN_HEIGHT = event.window.data2;
                         imageRect = {(WIN_WIDTH - imageRect.w) / 2, (WIN_HEIGHT - imageRect.h) / 2, imageRect.w, imageRect.h};
                     }
-                    break;
-                case SDL_KEYDOWN:
-                    performActionOnKeyInput(event);
                     break;
             }
             paint();
