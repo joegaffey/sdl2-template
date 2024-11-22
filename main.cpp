@@ -83,14 +83,21 @@ int initGraphics()
     return 1;
 }
 
-// Rendering //////////////////////////////////////////////////////////////////////////////////////
-
-void paint()
-{
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, imageTexture, nullptr, &imageRect);
-    SDL_RenderPresent(renderer);
+int init() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK != 0))
+    {
+        std::cerr << "Error: " << SDL_GetError() << std::endl;
+        return 0;
+    }
+    else
+    {
+        initControllers();
+        if(!initDisplay())
+            return 0;
+        if(!initGraphics())
+            return 0;
+    }
+    return 1;
 }
 
 // Event Handling /////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +175,16 @@ void handleWindowEvent(SDL_Event event)
     }
 }
 
+// Game loop //////////////////////////////////////////////////////////////////////////////////////
+
+void paint()
+{
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, imageTexture, nullptr, &imageRect);
+    SDL_RenderPresent(renderer);
+}
+
 void checkEvents()
 {
     SDL_Event event;
@@ -193,17 +210,7 @@ void checkEvents()
 
 int main(int argc, char const *argv[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK != 0))
-    {
-        std::cout << "Error: " << SDL_GetError();
-        running = 0;
-    }
-    else
-    {
-        initControllers();
-        running = initDisplay();
-        running = initGraphics();
-    }
+    running = init();
 
     while (running)
     {
@@ -211,7 +218,8 @@ int main(int argc, char const *argv[])
         paint();
     }
 
-    SDL_DestroyWindow(window);
+    if(window)
+        SDL_DestroyWindow(window);
     if (controller)
         SDL_GameControllerClose(controller);
     SDL_Quit();
