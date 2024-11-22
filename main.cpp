@@ -107,10 +107,22 @@ void handleButtonPress(SDL_Event event)
             imageRect.x += speed;
             break;
         case SDL_CONTROLLER_BUTTON_X:
-            imageRect.x += speed;
+            imageRect.x -= speed;
             break;
         case SDL_CONTROLLER_BUTTON_Y:
+            imageRect.y -= speed;
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
             imageRect.y += speed;
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+            imageRect.x += speed;
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+            imageRect.x -= speed;
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:
+            imageRect.y -= speed;
             break;
     }
 }
