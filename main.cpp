@@ -54,6 +54,12 @@ int initDisplay()
                               winHeight,
                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
+    if (!window)
+    {
+        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
+        return 0;
+    }
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     if (!renderer)
@@ -83,7 +89,8 @@ int initGraphics()
     return 1;
 }
 
-int init() {
+int init()
+{
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK != 0))
     {
         std::cerr << "Error: " << SDL_GetError() << std::endl;
@@ -92,9 +99,9 @@ int init() {
     else
     {
         initControllers();
-        if(!initDisplay())
+        if (!initDisplay())
             return 0;
-        if(!initGraphics())
+        if (!initGraphics())
             return 0;
     }
     return 1;
@@ -107,30 +114,30 @@ void handleButtonPress(SDL_Event event)
     SDL_GameControllerButton button = (SDL_GameControllerButton)event.cbutton.button;
     switch (button)
     {
-        case SDL_CONTROLLER_BUTTON_A:
-            imageRect.y += speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_B:
-            imageRect.x += speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_X:
-            imageRect.x -= speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_Y:
-            imageRect.y -= speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-            imageRect.y += speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-            imageRect.x += speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-            imageRect.x -= speed;
-            break;
-        case SDL_CONTROLLER_BUTTON_DPAD_UP:
-            imageRect.y -= speed;
-            break;
+    case SDL_CONTROLLER_BUTTON_A:
+        imageRect.y += speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_B:
+        imageRect.x += speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_X:
+        imageRect.x -= speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_Y:
+        imageRect.y -= speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+        imageRect.y += speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+        imageRect.x += speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+        imageRect.x -= speed;
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+        imageRect.y -= speed;
+        break;
     }
 }
 
@@ -138,30 +145,30 @@ void handleKeyInput(SDL_Event event)
 {
     switch (event.key.keysym.sym)
     {
-        case SDLK_UP:
-            imageRect.y -= speed;
-            break;
-        case SDLK_LEFT:
-            imageRect.x -= speed;
-            break;
-        case SDLK_RIGHT:
-            imageRect.x += speed;
-            break;
-        case SDLK_DOWN:
-            imageRect.y += speed;
-            break;
-        case SDLK_w:
-            imageRect.y -= speed;
-            break;
-        case SDLK_a:
-            imageRect.x -= speed;
-            break;
-        case SDLK_d:
-            imageRect.x += speed;
-            break;
-        case SDLK_s:
-            imageRect.y += speed;
-            break;
+    case SDLK_UP:
+        imageRect.y -= speed;
+        break;
+    case SDLK_LEFT:
+        imageRect.x -= speed;
+        break;
+    case SDLK_RIGHT:
+        imageRect.x += speed;
+        break;
+    case SDLK_DOWN:
+        imageRect.y += speed;
+        break;
+    case SDLK_w:
+        imageRect.y -= speed;
+        break;
+    case SDLK_a:
+        imageRect.x -= speed;
+        break;
+    case SDLK_d:
+        imageRect.x += speed;
+        break;
+    case SDLK_s:
+        imageRect.y += speed;
+        break;
     }
 }
 
@@ -191,18 +198,18 @@ void checkEvents()
     SDL_PollEvent(&event);
     switch (event.type)
     {
-        case SDL_QUIT:
-            running = 0;
-            break;
-        case SDL_CONTROLLERBUTTONDOWN:
-            handleButtonPress(event);
-            break;
-        case SDL_KEYDOWN:
-            handleKeyInput(event);
-            break;
-        case SDL_WINDOWEVENT:
-            handleWindowEvent(event);
-            break;
+    case SDL_QUIT:
+        running = 0;
+        break;
+    case SDL_CONTROLLERBUTTONDOWN:
+        handleButtonPress(event);
+        break;
+    case SDL_KEYDOWN:
+        handleKeyInput(event);
+        break;
+    case SDL_WINDOWEVENT:
+        handleWindowEvent(event);
+        break;
     }
 }
 
@@ -218,10 +225,13 @@ int main(int argc, char const *argv[])
         paint();
     }
 
-    if(window)
-        SDL_DestroyWindow(window);
     if (controller)
         SDL_GameControllerClose(controller);
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(imageTexture);
+    SDL_DestroyWindow(window);
     SDL_Quit();
+
     return 0;
 }
