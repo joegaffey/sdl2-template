@@ -1,11 +1,13 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-int winWidth = 800;
-int winHeight = 600;
-int running = 1;
-const char *imagePath = "sdl.bmp";
-const int speed = 5;
+static int winWidth = 800;
+static int winHeight = 600;
+static int running = 1;
+
+static const char *title = "SDL2 Template App";
+static const char *imagePath = "sdl.bmp";
+static const int speed = 5;
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -33,13 +35,13 @@ void initControllers()
             }
             else
             {
-                std::cerr << "Could not open game controller %i: " << i << SDL_GetError() << std::endl;
+                std::cerr << "Could not open controller %i: " << i << SDL_GetError() << std::endl;
             }
         }
     }
 
     if (!controller)
-        std::cout << "No game controllers found." << std::endl;
+        std::cout << "No controllers found." << std::endl;
 }
 
 int initDisplay()
@@ -47,7 +49,7 @@ int initDisplay()
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
 
-    window = SDL_CreateWindow("SDL2 Template",
+    window = SDL_CreateWindow(title,
                               (DM.w / 2) - (winWidth / 2),
                               (DM.h / 2) - (winHeight / 2),
                               winWidth,
@@ -84,7 +86,12 @@ int initGraphics()
         std::cerr << "Unable to create texture! SDL_Error: " << SDL_GetError() << std::endl;
         return 0;
     }
-    imageRect = {(winWidth - imageSurface->w) / 2, (winHeight - imageSurface->h) / 2, imageSurface->w, imageSurface->h};
+    imageRect = {
+        (winWidth - imageSurface->w) / 2,
+        (winHeight - imageSurface->h) / 2,
+        imageSurface->w,
+        imageSurface->h
+    };
     SDL_FreeSurface(imageSurface);
     return 1;
 }
