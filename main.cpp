@@ -90,8 +90,7 @@ int initGraphics()
         (winWidth - imageSurface->w) / 2,
         (winHeight - imageSurface->h) / 2,
         imageSurface->w,
-        imageSurface->h
-    };
+        imageSurface->h};
     SDL_FreeSurface(imageSurface);
     return 1;
 }
@@ -191,11 +190,19 @@ void handleWindowEvent(SDL_Event event)
 
 // Game loop //////////////////////////////////////////////////////////////////////////////////////
 
+SDL_Vertex triangleVertex[3] =
+{
+    {{0, 0}, {255, 0, 0, 255}},
+    {{0, 50}, {0, 255, 0, 255}},
+    {{50, 0}, {0, 0, 255, 255}}
+};
+
 void paint()
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, imageTexture, nullptr, &imageRect);
+    SDL_RenderGeometry(renderer, nullptr, triangleVertex, 3, nullptr, 0);
     SDL_RenderPresent(renderer);
 }
 
